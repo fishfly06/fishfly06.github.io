@@ -28,19 +28,20 @@ MINERU_BASE_URL=https://mineru.net/api/v4
 pip install python-dotenv requests
 ```
 
-项目目录可以这样组织：
+在上一篇的项目框架中，本章只新增 `scripts/parse_pdf.py`，并使用 `data/input/` 保存原始 PDF：
 
 ```text
-.
-├── .env
-├── input/
-│   └── report.pdf
-└── parse_pdf.py
+RAG/
+├── data/
+│   └── input/
+│       └── report.pdf
+└── scripts/
+    └── parse_pdf.py
 ```
 
 ## 完整代码
 
-下面的脚本可以直接运行。它会把解析结果保存到 `output/report.md`，同时保留 MinerU 返回的 ZIP 文件，方便排查解析结果。
+将下面的代码保存为 `scripts/parse_pdf.py`。配置好 Token 并准备 PDF 后，在项目根目录运行。脚本保留 MinerU 返回的 ZIP 文件和解压目录 `data/parsed/report/`；下一章使用其中的 `full.md` 和同级 `images/`。额外复制的 `data/parsed/report.md` 只用于查看文本，相对图片链接仍以原解压目录为准。
 
 ```python
 from __future__ import annotations
@@ -223,13 +224,13 @@ if __name__ == "__main__":
     parser.add_argument(
         "pdf",
         nargs="?",
-        default="input/report.pdf",
-        help="待解析的 PDF 路径，默认：input/report.pdf",
+        default="data/input/report.pdf",
+        help="待解析的 PDF 路径，默认：data/input/report.pdf",
     )
     parser.add_argument(
         "--output-dir",
-        default="output",
-        help="输出目录，默认：output",
+        default="data/parsed",
+        help="输出目录，默认：data/parsed",
     )
     args = parser.parse_args()
 
@@ -239,13 +240,13 @@ if __name__ == "__main__":
 运行：
 
 ```bash
-python parse_pdf.py
+python scripts/parse_pdf.py
 ```
 
 也可以指定输入文件和输出目录：
 
 ```bash
-python parse_pdf.py input/paper.pdf --output-dir output
+python scripts/parse_pdf.py data/input/paper.pdf --output-dir data/parsed
 ```
 
 ## 运行流程

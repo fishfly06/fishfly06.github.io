@@ -21,13 +21,17 @@ tags:
 python -m pip install langchain-text-splitters
 ```
 
-假设目录如下：
+在上一篇生成的项目目录中，本章新增 `scripts/chunk_markdown.py`，读取图片处理后的 Markdown，并把结果写入 `data/chunks/`：
 
 ```text
-.
-├── chunk_markdown.py
-└── input/
-    └── report.md
+RAG/
+├── data/
+│   ├── parsed/
+│   │   └── report/
+│   │       └── full_new.md
+│   └── chunks/
+└── scripts/
+    └── chunk_markdown.py
 ```
 
 ## 处理流程
@@ -40,7 +44,7 @@ python -m pip install langchain-text-splitters
 
 ## 完整代码
 
-将下面的代码保存为 `chunk_markdown.py`：
+将下面的代码保存为 `scripts/chunk_markdown.py`：
 
 ```python
 from __future__ import annotations
@@ -249,19 +253,16 @@ if __name__ == "__main__":
     main()
 ```
 
-运行默认配置：
+在项目根目录运行，使用默认切片长度，并明确指定交给下一章的输出路径：
 
 ```bash
-python chunk_markdown.py input/report.md
+python scripts/chunk_markdown.py data/parsed/report/full_new.md --output data/chunks/report_chunks.json
 ```
 
-输出文件为 `input/report_chunks.json`。也可以调整 Chunk 长度和输出位置：
+输出文件为 `data/chunks/report_chunks.json`。如需调整切片长度，可使用下面的一行命令（PowerShell 和 Bash 均可）。省略 `--output` 时，脚本默认在 Markdown 同目录写出 `full_new_chunks.json`；本系列始终显式指定输出：
 
 ```bash
-python chunk_markdown.py input/report.md \
-  --max-length 1200 \
-  --min-length 300 \
-  --output output/report_chunks.json
+python scripts/chunk_markdown.py data/parsed/report/full_new.md --max-length 1200 --min-length 300 --output data/chunks/report_chunks.json
 ```
 
 ## 关键实现说明

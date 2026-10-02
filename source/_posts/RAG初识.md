@@ -10,6 +10,52 @@ tags:
 
 RAG 的核心思路很简单：先从知识库中找出与问题最相关的内容，再把这些内容和用户问题一起交给 LLM，让模型基于检索到的上下文生成答案。
 
+## 本系列使用的项目框架
+
+后面的文章都会在同一个项目中继续完善。下面是整个系列的目录规划：脚本按章节添加，数据文件由运行命令生成；当前第 5 章已经提供可运行的向量化与入库入口，检索和回答仍放在后续章节。
+
+```text
+RAG/
+├── .env                  # 本地密钥和服务地址，不提交到 Git
+├── .env.example          # 配置项示例
+├── data/
+│   ├── input/             # 原始文件，例如 report.pdf
+│   ├── parsed/            # MinerU 解压后的 Markdown 和图片
+│   │   └── report/
+│   │       ├── full.md
+│   │       ├── full_new.md
+│   │       └── images/
+│   └── chunks/            # 切片后的 JSON 文件
+│       └── report_chunks.json
+├── models/
+│   └── bge-m3/            # 本地 Embedding 模型（可选）
+├── scripts/
+│   ├── mini_rag.py        # 第 1 章：检索与提示词组装演示
+│   ├── parse_pdf.py       # 第 2 章：PDF 解析
+│   ├── process_images.py  # 第 3 章：图片处理
+│   ├── chunk_markdown.py  # 第 4 章：文档切片
+│   ├── embed_and_insert.py # 第 5 章：向量化与入库
+│   └── ask.py             # 后续：检索、生成与引用（规划）
+├── config/                # Embedding、Milvus 等配置
+├── utils/                 # 可复用的项目工具
+├── tool/                  # 日志等基础设施
+├── requirements.txt
+└── README.md
+```
+
+每一章都会说明“本章新增什么、输入在哪里、如何运行、输出是什么”。下文所有相对路径都以项目根目录 `RAG/` 为起点。例如项目放在 `D:/Desktop/RAG`，就先在终端进入这个目录，再执行各章命令。系列统一使用 Python 3.10 或更高版本，依赖按章节安装；新配置追加到根目录的 `.env`，保留前面已填写的配置。
+
+| 章节 | 新增脚本 | 输入 → 输出 |
+| --- | --- | --- |
+| 本篇 | `scripts/mini_rag.py` | 内置示例资料 → 控制台中的召回结果和提示词 |
+| {% post_link RAG文档解析1 文档解析 %} | `scripts/parse_pdf.py` | `data/input/report.pdf` → `data/parsed/report/full.md` 与 `images/` |
+| {% post_link RAG文档解析2 图片处理 %} | `scripts/process_images.py` | `data/parsed/report/full.md` → 同目录的 `full_new.md` |
+| {% post_link RAG文档切片 文档切片 %} | `scripts/chunk_markdown.py` | `full_new.md` → `data/chunks/report_chunks.json` |
+| {% post_link RAG向量化与向量数据库 向量化与入库 %} | `scripts/embed_and_insert.py` | Chunk JSON → Milvus 中的向量与元数据 |
+| 检索与回答（规划） | `scripts/ask.py` | 用户问题 → 检索片段 → 带来源的答案 |
+
+先跑通本篇的小例子，再沿着同一份文档完成后续步骤。看到中间产物时，可以打开它检查处理结果，再进入下一章。
+
 ## RAG 的架构流程
 
 ![RAG 整体架构流程图](https://www.runoob.com/wp-content/uploads/2026/06/11-rag-architecture.svg)
@@ -37,10 +83,10 @@ RAG 的核心思路很简单：先从知识库中找出与问题最相关的内�
 
 下面的示例使用 Python 标准库完成“关键词召回 + 提示词组装”。它不依赖向量数据库或第三方 API，可以直接运行，用来理解 RAG 的基本数据流。实际项目中，可以将 `retrieve` 替换为向量检索，并将生成的提示词交给具体的 LLM。
 
-准备 Python 3.9 或更高版本，保存为 `mini_rag.py` 后运行：
+将下面的代码保存为 `scripts/mini_rag.py`，在项目根目录运行：
 
 ```bash
-python mini_rag.py
+python scripts/mini_rag.py
 ```
 
 ```python

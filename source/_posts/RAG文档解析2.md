@@ -14,18 +14,19 @@ tags:
 
 ## 准备目录和配置
 
-上一篇的脚本会把 MinerU 返回的 ZIP 解压到 `output/report/`，其中包含 `full.md` 和 `images/`。本篇应处理解压目录中的 `full.md`，因为上一篇额外复制到 `output/report.md` 的文件与 `images/` 不在同一级目录。
+上一篇的脚本会把 MinerU 返回的 ZIP 解压到 `data/parsed/report/`，其中包含 `full.md` 和 `images/`。本篇应处理解压目录中的 `full.md`，因为上一篇额外复制到 `data/parsed/report.md` 的文件与 `images/` 不在同一级目录。
 
 ```text
-.
-├── .env
-├── process_images.py
-└── output/
-    └── report/
-        ├── full.md
-        └── images/
-            ├── figure1.png
-            └── figure2.jpg
+RAG/
+├── scripts/
+│   └── process_images.py
+└── data/
+    └── parsed/
+        └── report/
+            ├── full.md
+            └── images/
+                ├── figure1.png
+                └── figure2.jpg
 ```
 
 需要 Python 3.10 或更新版本。安装依赖：
@@ -34,7 +35,7 @@ tags:
 python -m pip install python-dotenv minio langchain-openai
 ```
 
-在项目根目录创建 `.env`，填写自己的 MinIO 和兼容 OpenAI 接口的视觉模型配置：
+在项目根目录已有的 `.env` 中追加自己的 MinIO 和兼容 OpenAI 接口的视觉模型配置，保留上一章的 MinerU 配置：
 
 ```dotenv
 MINIO_ENDPOINT=127.0.0.1:9000
@@ -58,7 +59,7 @@ VL_BASE_URL=https://dashscope.aliyuncs.com/compatible-mode/v1
 
 ## 完整代码
 
-将下面的代码保存为 `process_images.py`：
+将下面的代码保存为 `scripts/process_images.py`：
 
 ```python
 from __future__ import annotations
@@ -219,9 +220,9 @@ if __name__ == "__main__":
 运行：
 
 ```bash
-python process_images.py output/report/full.md
+python scripts/process_images.py data/parsed/report/full.md
 ```
 
-处理后得到 `output/report/full_new.md`。同一张图片在 Markdown 中出现多次时，只生成一次摘要、上传一次，但会替换所有引用；`images/` 中未被引用的文件不会上传。模型调用或上传失败时，程序会报错且不会写出新的 Markdown；已上传的图片可以在排查后重新运行，重名对象会被覆盖。这里没有在运行前清空 MinIO 目录，避免误删已有对象。
+处理后得到 `data/parsed/report/full_new.md`。同一张图片在 Markdown 中出现多次时，只生成一次摘要、上传一次，但会替换所有引用；`images/` 中未被引用的文件不会上传。模型调用或上传失败时，程序会报错且不会写出新的 Markdown；已上传的图片可以在排查后重新运行，重名对象会被覆盖。这里没有在运行前清空 MinIO 目录，避免误删已有对象。
 
 > 当前示例针对 MinerU 常见的内联图片语法 `![描述](images/文件名.png)`，支持 JPG、PNG 和 WebP；GIF、BMP、带 Markdown 标题或括号等复杂路径的图片引用需要按实际输出格式扩展。最终 URL 是否能从检索端访问，还取决于 MinIO 的网络地址和桶的读取权限。
