@@ -1,0 +1,5 @@
+name: RAG 从入门到实战
+title: RAG 从入门到实战
+description: 面向新手，从 RAG 基础、文档解析、图片处理、文档切片到向量化与入库，在同一个项目中逐步搭建知识库问答系统。系列持续更新中，建议按顺序阅读。
+order_by: date
+leftbar: related, recent

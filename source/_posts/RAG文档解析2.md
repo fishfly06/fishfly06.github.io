@@ -1,6 +1,7 @@
 ---
 title: "RAG 文档解析（2）：Markdown 文档中的图片处理"
 date: 2026-09-30 20:23:43
+topic: rag
 tags:
   - RAG
   - Markdown

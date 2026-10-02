@@ -1,6 +1,7 @@
 ---
 title: "RAG 文档解析：使用 MinerU 将 PDF 转换为 Markdown"
 date: 2026-09-29 18:59:29
+topic: rag
 tags:
   - RAG
   - MinerU

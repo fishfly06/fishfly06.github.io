@@ -1,6 +1,7 @@
 ---
 title: RAG向量化与向量数据库
 date: 2026-10-02 11:37:22
+topic: rag
 tags:
 ---
 

@@ -1,6 +1,7 @@
 ---
 title: "RAG 初识：让大语言模型基于知识库回答问题"
 date: 2026-09-28 21:05:04
+topic: rag
 tags:
   - RAG
   - LLM

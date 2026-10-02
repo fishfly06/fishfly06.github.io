@@ -1,6 +1,7 @@
 ---
 title: "RAG 文档切片：按标题切分 Markdown 并生成 Chunk"
 date: 2026-10-01 13:22:21
+topic: rag
 tags:
   - RAG
   - Markdown
